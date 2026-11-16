@@ -109,8 +109,10 @@
             100% { transform: translate3d(-20px, 18px, 0) scale(0.97); }
         }
 
-        /* ==================== LIQUID GLASS SURFACE PRIMITIVE ==================== */
+        /* ==================== LIQUID GLASS SURFACE PRIMITIVE + CURSOR SPOTLIGHT ==================== */
         .liquid-glass {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
             background: var(--glass-bg);
             backdrop-filter: blur(22px) saturate(165%);
             -webkit-backdrop-filter: blur(22px) saturate(165%);
@@ -130,11 +132,49 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.58), transparent);
             pointer-events: none;
+            z-index: 2;
+        }
+
+        .liquid-glass::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                360px circle at var(--mouse-x) var(--mouse-y),
+                rgba(255, 255, 255, 0.13),
+                rgba(220, 38, 38, 0.06) 45%,
+                transparent 75%
+            );
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .liquid-glass:hover::after {
+            opacity: 1;
+        }
+
+        .liquid-glass > * {
+            position: relative;
+            z-index: 2;
         }
 
         main, footer {
             position: relative;
             z-index: 1;
+        }
+
+        /* ==================== SCROLL REVEAL ANIMATION ==================== */
+        .reveal-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal-item.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* ==================== NAVBAR LIQUID GLASS ==================== */
@@ -166,18 +206,59 @@
             letter-spacing: 0.04em;
         }
 
-        .nav-link {
-            color: #d4d4d8;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            text-decoration: none;
-            transition: color 0.2s ease;
+        .navbar-profile {
+            display: inline-flex;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            border-radius: 50%;
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.28);
         }
 
-        .nav-link:hover {
+        .navbar-profile img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .nav-link {
+            position: relative;
+            color: #d4d4d8;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 0.4rem 0;
+            transition: color 0.25s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-red);
+            border-radius: 99px;
+            transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-link:hover,
+        .nav-link.active-link {
             color: #ffffff;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active-link::after {
+            width: 100%;
         }
 
         /* ==================== BUTTONS LIQUID PILL ==================== */
@@ -241,14 +322,14 @@
         .hero-section {
             position: relative;
             padding-top: 7.5rem;
-            padding-bottom: 5rem;
-            min-height: 100vh;
+            padding-bottom: 4rem;
+            min-height: 94vh;
             display: flex;
             align-items: center;
             overflow: hidden;
         }
 
-        /* Teks Raksasa PORTFOLIO di Latar Belakang - Membentang Ujung ke Ujung dengan Ruang Aman */
+        /* Teks Raksasa PORTOFOLIO di Latar Belakang */
         .hero-watermark-wrap {
             position: absolute;
             top: 5.5rem;
@@ -256,7 +337,7 @@
             right: 0;
             width: 100%;
             max-width: 100vw;
-            padding: 0.5rem clamp(1.25rem, 3vw, 3rem) 2.5rem;
+            padding: 0.5rem clamp(1rem, 3vw, 3rem) 2.5rem;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -268,11 +349,11 @@
 
         .hero-watermark-text {
             font-family: var(--font-display);
-            font-size: clamp(3.9rem, 18.6vw, 17.8rem);
+            font-size: clamp(3.35rem, 18.2vw, 17.8rem);
             line-height: 0.92;
             letter-spacing: 0.03em;
             text-transform: uppercase;
-            transform: scaleY(1.22);
+            transform: scaleY(1.18);
             transform-origin: top center;
             background: linear-gradient(180deg, #dc2626 0%, #991b1b 48%, rgba(10, 10, 10, 0.14) 92%, #0a0a0a 100%);
             -webkit-background-clip: text;
@@ -284,7 +365,16 @@
             padding-bottom: 0.14em;
         }
 
-        /* Font Script Hello, I'm */
+        @media (max-width: 480px) {
+            .hero-watermark-wrap {
+                top: 5.75rem;
+            }
+            .hero-watermark-text {
+                font-size: clamp(2.85rem, 16.5vw, 4.2rem);
+                transform: scaleY(1.12);
+            }
+        }
+
         .hero-script {
             font-family: var(--font-script);
             font-size: clamp(2.1rem, 3.6vw, 3.1rem);
@@ -295,7 +385,6 @@
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.75);
         }
 
-        /* Nama Utama 2 Baris */
         .hero-name {
             font-family: var(--font-body);
             font-weight: 800;
@@ -307,7 +396,6 @@
             text-shadow: 0 6px 24px rgba(0, 0, 0, 0.8);
         }
 
-        /* Kotak Foto Profil Tengah BERSIH */
         .hero-photo-clean {
             width: 100%;
             max-width: 390px;
@@ -322,6 +410,20 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            isolation: isolate;
+        }
+
+        .hero-photo-clean::before {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            top: 18%;
+            left: 10%;
+            width: 80%;
+            height: 62%;
+            background: radial-gradient(ellipse, rgba(220, 38, 38, 0.24) 0%, rgba(220, 38, 38, 0) 72%);
+            filter: blur(46px);
+            pointer-events: none;
         }
 
         .hero-photo-clean img {
@@ -329,10 +431,61 @@
             height: 100%;
             object-fit: contain;
             display: block;
-            filter: drop-shadow(14px 0 26px rgba(220, 38, 38, 0.48));
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.9)) contrast(1.06) saturate(0.88);
+            -webkit-mask-image: linear-gradient(to bottom, black 76%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 76%, transparent 100%);
         }
 
-        /* ==================== FILTER & PROJECT CARDS ==================== */
+        /* ==================== 1. KINETIC MARQUEE BAND ==================== */
+        .marquee-strip {
+            position: relative;
+            z-index: 2;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(220, 38, 38, 0.08) 100%);
+            overflow: hidden;
+            padding: 1rem 0;
+            user-select: none;
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marqueeScroll 28s linear infinite;
+        }
+
+        .marquee-strip:hover .marquee-track {
+            animation-play-state: paused;
+        }
+
+        .marquee-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding-right: 1.5rem;
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        .marquee-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            box-shadow: 0 0 10px var(--accent-red);
+        }
+
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ==================== 2. FILTER & ASYMMETRIC BENTO PROJECT CARDS ==================== */
         .filter-pill {
             background: linear-gradient(155deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
             backdrop-filter: blur(14px);
@@ -364,7 +517,7 @@
         }
 
         .project-card {
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, background 0.35s ease, box-shadow 0.35s ease, opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .project-card:hover {
@@ -372,6 +525,21 @@
             border-color: rgba(239, 68, 68, 0.65);
             background: var(--glass-bg-hover);
             box-shadow: 0 26px 56px rgba(0, 0, 0, 0.7), 0 0 28px rgba(220, 38, 38, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.48);
+        }
+
+        /* Mini UI Mockup Window di dalam Kartu Bento Utama */
+        .ui-mockup-frame {
+            background: rgba(10, 10, 12, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 0.85rem;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transition: transform 0.35s ease, border-color 0.35s ease;
+        }
+
+        .project-card:hover .ui-mockup-frame {
+            transform: translateY(-2px);
+            border-color: rgba(239, 68, 68, 0.4);
         }
 
         .display-num {
@@ -392,6 +560,116 @@
             border-radius: 999px;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
             padding: 0.28rem 0.72rem;
+        }
+
+        /* ==================== 3. EDITORIAL INDEX LIST (CORE FOCUS & IMPACT) ==================== */
+        .editorial-row {
+            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 2rem 1rem;
+            transition: background-color 0.3s ease, padding-left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .editorial-row:first-child {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .editorial-row:hover {
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.09) 0%, rgba(255, 255, 255, 0.02) 60%, transparent 100%);
+            padding-left: 1.5rem;
+        }
+
+        .editorial-row-num {
+            font-family: var(--font-display);
+            font-size: clamp(2.4rem, 4vw, 3.4rem);
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.28);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .editorial-row:hover .editorial-row-num {
+            color: var(--accent-red);
+            transform: scale(1.06);
+        }
+
+        /* ==================== 4. OPEN TIMELINE (JOURNEY) ==================== */
+        .open-timeline {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .timeline-node {
+            position: relative;
+            padding-bottom: 2.5rem;
+        }
+
+        .timeline-node:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-node::before {
+            content: '';
+            position: absolute;
+            left: calc(-2rem - 7px);
+            top: 0.45rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #18181b;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-node.is-current::before,
+        .timeline-node:hover::before {
+            background: var(--accent-red);
+            border-color: #fca5a5;
+            box-shadow: 0 0 16px rgba(220, 38, 38, 0.85);
+            transform: scale(1.18);
+        }
+
+        /* ==================== 5. INTERACTIVE CONTACT DIRECTORY ROWS ==================== */
+        .contact-directory-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.15rem 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            transition: padding-left 0.28s ease, border-color 0.28s ease;
+        }
+
+        .contact-directory-row:first-child {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .contact-directory-row:hover {
+            padding-left: 0.85rem;
+            border-bottom-color: rgba(220, 38, 38, 0.55);
+        }
+
+        .copy-icon-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #d4d4d8;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.22s ease;
+        }
+
+        .copy-icon-btn:hover {
+            color: #ffffff;
+            background: rgba(220, 38, 38, 0.25);
+            border-color: rgba(239, 68, 68, 0.5);
         }
 
         /* ==================== QUOTE CARD RED LIQUID GLASS ==================== */
@@ -427,48 +705,38 @@
             line-height: 1.1;
         }
 
-        /* ==================== NEON ROTATING OUTLINE GLOW CARD ==================== */
-        @property --neon-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-        }
-
+        /* ==================== NEON ROTATING OUTLINE GLOW CARD (GPU SMOOTH) ==================== */
         .neon-card-wrapper {
             position: relative;
             border-radius: 24px;
             padding: 2px;
             display: flex;
             width: 100%;
+            overflow: hidden;
+            box-shadow: 0 22px 52px rgba(0, 0, 0, 0.7), 0 0 32px rgba(220, 38, 38, 0.22);
+            transform: translateZ(0);
+        }
+
+        .neon-card-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 220%;
+            height: 220%;
+            top: -60%;
+            left: -60%;
             background: conic-gradient(
-                from var(--neon-angle),
-                rgba(255, 255, 255, 0.1) 0deg,
-                rgba(255, 255, 255, 0.08) 235deg,
-                rgba(220, 38, 38, 0.55) 285deg,
+                from 0deg,
+                rgba(255, 255, 255, 0.08) 0deg,
+                rgba(255, 255, 255, 0.06) 230deg,
+                rgba(220, 38, 38, 0.6) 285deg,
                 #ff2a2a 325deg,
                 #ffffff 346deg,
                 #dc2626 360deg
             );
-            animation: spinNeonAngle 7.5s linear infinite;
-            box-shadow: 0 22px 52px rgba(0, 0, 0, 0.7), 0 0 32px rgba(220, 38, 38, 0.24);
-        }
-
-        .neon-card-wrapper::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 26px;
-            background: conic-gradient(
-                from var(--neon-angle),
-                transparent 0deg,
-                transparent 255deg,
-                rgba(255, 42, 42, 0.65) 330deg,
-                transparent 360deg
-            );
-            filter: blur(14px);
-            animation: spinNeonAngle 7.5s linear infinite;
-            z-index: 0;
+            animation: spinNeonGPU 6s linear infinite;
+            will-change: transform;
             pointer-events: none;
+            z-index: 0;
         }
 
         .neon-card-inner {
@@ -476,30 +744,13 @@
             z-index: 1;
             width: 100%;
             border-radius: 22px;
-            background: linear-gradient(155deg, rgba(24, 24, 28, 0.94) 0%, rgba(11, 11, 13, 0.98) 55%, rgba(44, 10, 10, 0.92) 100%);
-            backdrop-filter: blur(24px) saturate(170%);
-            -webkit-backdrop-filter: blur(24px) saturate(170%);
+            background: linear-gradient(155deg, rgba(24, 24, 28, 0.96) 0%, rgba(11, 11, 13, 0.99) 55%, rgba(44, 10, 10, 0.94) 100%);
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.28);
         }
 
-        @keyframes spinNeonAngle {
-            0% {
-                --neon-angle: 0deg;
-            }
-            100% {
-                --neon-angle: 360deg;
-            }
-        }
-
-        /* ==================== CONTACT ITEM CARD ==================== */
-        .contact-item-card {
-            transition: transform 0.28s ease, border-color 0.28s ease, background 0.28s ease;
-        }
-
-        .contact-item-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(239, 68, 68, 0.5);
-            background: var(--glass-bg-hover);
+        @keyframes spinNeonGPU {
+            0% { transform: rotate(0deg) translateZ(0); }
+            100% { transform: rotate(360deg) translateZ(0); }
         }
 
         /* ==================== TOAST NOTIFICATION ==================== */
@@ -540,50 +791,50 @@
         <div class="liquid-orb liquid-orb-3"></div>
     </div>
 
-    <!-- ==================== 1. NAVBAR LIQUID GLASS ==================== -->
+    <!-- ==================== NAVBAR LIQUID GLASS ==================== -->
     <header class="navbar">
         <div class="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between">
-            <a href="#top" class="flex items-center gap-3 text-white no-underline">
-                <span class="brand-badge">AF.</span>
-                <span class="font-extrabold tracking-wider text-sm sm:text-base uppercase">AHMAD FATONI</span>
+            <!-- Brand / Identitas Kiri -->
+            <a href="#top" class="flex items-center gap-3.5 text-white no-underline group">
+                <span class="navbar-profile transition-transform duration-300 group-hover:scale-105">
+                    <img src="fotoprofil2.png" alt="Ahmad Fatoni">
+                </span>
+                <div class="flex flex-col">
+                    <span class="font-extrabold tracking-wider text-sm sm:text-base uppercase leading-none">AHMAD FATONI</span>
+                    <span class="text-[10px] font-semibold tracking-[0.18em] uppercase text-zinc-400 mt-1">TonyDev Portfolio</span>
+                </div>
             </a>
 
             <!-- Navigasi Desktop -->
-            <nav class="hidden md:flex items-center gap-8" aria-label="Navigasi Utama">
-                <a href="#karya" class="nav-link">Karya</a>
-                <a href="#pencapaian" class="nav-link">Fokus</a>
-                <a href="#tentang" class="nav-link">Tentang</a>
-                <a href="#perjalanan" class="nav-link">Perjalanan</a>
-                <a href="#kontak" class="nav-link">Kontak</a>
+            <nav class="hidden md:flex items-center gap-9" aria-label="Navigasi Utama">
+                <a href="#karya" class="nav-link" data-nav="karya">Works</a>
+                <a href="#pencapaian" class="nav-link" data-nav="pencapaian">Expertise</a>
+                <a href="#tentang" class="nav-link" data-nav="tentang">About</a>
+                <a href="#perjalanan" class="nav-link" data-nav="perjalanan">Journey</a>
+                <a href="#kontak" class="nav-link" data-nav="kontak">Contact</a>
             </nav>
 
-            <div class="flex items-center gap-3">
-                <a href="#kontak" class="hidden sm:inline-flex btn-liquid-primary !py-2.5 !px-5 !text-xs">
-                    Hubungi Saya
-                </a>
-                <!-- Tombol Menu Mobile -->
-                <button id="mobileMenuBtn" type="button" aria-label="Buka Menu" class="md:hidden w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex flex-col items-center justify-center gap-1.5 text-white">
-                    <span class="w-5 h-0.5 bg-white block"></span>
-                    <span class="w-5 h-0.5 bg-white block"></span>
-                    <span class="w-5 h-0.5 bg-white block"></span>
-                </button>
-            </div>
+            <!-- Tombol Menu Mobile -->
+            <button id="mobileMenuBtn" type="button" aria-label="Buka Menu" class="md:hidden w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex flex-col items-center justify-center gap-1.5 text-white">
+                <span class="w-5 h-0.5 bg-white block"></span>
+                <span class="w-5 h-0.5 bg-white block"></span>
+                <span class="w-5 h-0.5 bg-white block"></span>
+            </button>
         </div>
 
         <!-- Drawer Mobile -->
         <div id="mobileDrawer" class="hidden md:hidden bg-[#0e0e10]/95 backdrop-blur-2xl border-b border-white/15 px-6 py-5 flex-col gap-4">
-            <a href="#karya" class="nav-link block py-1 mobile-nav-link">Karya</a>
-            <a href="#pencapaian" class="nav-link block py-1 mobile-nav-link">Fokus</a>
-            <a href="#tentang" class="nav-link block py-1 mobile-nav-link">Tentang</a>
-            <a href="#perjalanan" class="nav-link block py-1 mobile-nav-link">Perjalanan</a>
-            <a href="#kontak" class="nav-link block py-1 mobile-nav-link">Kontak</a>
+            <a href="#karya" class="nav-link block py-1 mobile-nav-link" data-nav="karya">Works</a>
+            <a href="#pencapaian" class="nav-link block py-1 mobile-nav-link" data-nav="pencapaian">Expertise</a>
+            <a href="#tentang" class="nav-link block py-1 mobile-nav-link" data-nav="tentang">About</a>
+            <a href="#perjalanan" class="nav-link block py-1 mobile-nav-link" data-nav="perjalanan">Journey</a>
+            <a href="#kontak" class="nav-link block py-1 mobile-nav-link" data-nav="kontak">Contact</a>
         </div>
     </header>
-
+    
     <main id="top">
-        <!-- ==================== 2. HERO SECTION EDITORIAL ==================== -->
-        <section class="hero-section">
-            <!-- Teks Raksasa PORTFOLIO di Latar Belakang -->
+        <!-- ==================== 01. HERO SECTION EDITORIAL ==================== -->
+        <section class="hero-section" data-section="top">
             <div class="hero-watermark-wrap" aria-hidden="true">
                 <div class="hero-watermark-text">PORTOFOLIO</div>
             </div>
@@ -591,29 +842,24 @@
             <div class="max-w-7xl mx-auto px-5 sm:px-8 w-full relative z-10">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-4 items-center">
 
-                    <!-- Kolom Kiri (4 Kolom): BERSIH Tanpa Kotak Blur/Border, Rata Kiri Sejajar -->
+                    <!-- Kolom Kiri (4 Kolom) -->
                     <div class="lg:col-span-4 text-left flex flex-col items-start pt-2 lg:pt-0">
-                        <!-- Sapaan sejajar kepala huruf P pada PORTFOLIO -->
                         <span class="hero-script mb-4 lg:mb-5">Hello, I'm</span>
 
-                        <!-- Nama Dua Baris sejajar tengah huruf PO -->
                         <h1 class="hero-name mt-1 mb-4">
                             <span class="block">AHMAD</span>
                             <span class="block">FATONI.</span>
                         </h1>
                         <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 -mt-2 mb-4">TonyDev</span>
 
-                        <!-- Teks Peran Merah Menyala Rata Kiri -->
                         <p class="text-[#dc2626] font-extrabold text-sm sm:text-base uppercase tracking-wider text-left max-w-sm">
                             Full-Stack Web Developer, Automator, &amp; Entrepreneur
                         </p>
 
-                        <!-- Jarak Vertikal Lega Sebelum Paragraf Bio Putih Bersih Rata Kiri (Fokus pada Keahlian) -->
                         <p class="text-white text-sm sm:text-base leading-relaxed text-left max-w-sm mt-8 sm:mt-10 mb-8 font-normal">
                             Mengembangkan aplikasi web terintegrasi cloud, merancang skrip otomatisasi alur kerja, dan menciptakan solusi digital praktis untuk mempercepat operasional bisnis.
                         </p>
 
-                        <!-- Tombol Pill Liquid Glass -->
                         <div class="flex flex-wrap items-center justify-start gap-3.5">
                             <a href="#karya" class="btn-liquid-primary">
                                 Lihat Karya
@@ -625,28 +871,28 @@
                         </div>
                     </div>
 
-                    <!-- Kolom Tengah (4 Kolom): Kotak Foto Profil Utama Tepat di Pusat Layar BERSIH -->
+                    <!-- Kolom Tengah (4 Kolom) -->
                     <div class="lg:col-span-4 flex justify-center items-center">
                         <div class="hero-photo-clean">
                             <img src="fotoprofil2.png" alt="Ahmad Fatoni">
                         </div>
                     </div>
 
-                    <!-- Kolom Kanan (4 Kolom): Bawah Sejajar Area Bawah Teks PORTFOLIO Berisi Kartu Statistik Liquid Glass -->
-                    <div class="lg:col-span-4 flex flex-col justify-end lg:items-end lg:self-end lg:pb-2">
-                        <div class="liquid-glass p-6 w-full lg:max-w-[270px]">
-                            <div class="grid grid-cols-3 lg:grid-cols-1 gap-5">
-                                <div class="border-b-0 lg:border-b border-white/10 pb-0 lg:pb-4">
+                    <!-- Kolom Kanan (4 Kolom): Open Editorial Metrics (Tanpa Kotak) -->
+                    <div class="lg:col-span-4 flex flex-col justify-end lg:items-end lg:self-end lg:pb-3">
+                        <div class="w-full lg:max-w-[250px] border-t lg:border-t-0 lg:border-l border-white/15 pt-6 lg:pt-0 lg:pl-7">
+                            <div class="grid grid-cols-3 lg:grid-cols-1 gap-6">
+                                <div>
                                     <div class="display-num text-3xl sm:text-4xl text-[#dc2626]">3+</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-white mt-1">Tahun Ngoding</div>
+                                    <div class="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-300 mt-1">Tahun Ngoding</div>
                                 </div>
-                                <div class="border-b-0 lg:border-b border-white/10 pb-0 lg:pb-4">
+                                <div>
                                     <div class="display-num text-3xl sm:text-4xl text-white">5+</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-zinc-300 mt-1">Proyek &amp; Sistem</div>
+                                    <div class="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-400 mt-1">Proyek &amp; Sistem</div>
                                 </div>
                                 <div>
                                     <div class="display-num text-3xl sm:text-4xl text-[#dc2626]">100%</div>
-                                    <div class="text-xs font-bold uppercase tracking-wider text-white mt-1">Komitmen Eksekusi</div>
+                                    <div class="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-300 mt-1">Komitmen Eksekusi</div>
                                 </div>
                             </div>
                         </div>
@@ -656,10 +902,32 @@
             </div>
         </section>
 
-        <!-- ==================== 3. KARYA YANG BICARA (PROYEK UNGGULAN) ==================== -->
-        <section id="karya" class="py-24 border-t border-white/10">
+        <!-- ==================== KINETIC MARQUEE BAND ==================== -->
+        <div class="marquee-strip" aria-hidden="true">
+            <div class="marquee-track">
+                <div class="marquee-item">
+                    <span>Full-Stack Web Apps</span><span class="marquee-dot"></span>
+                    <span>Cloud POS Architecture</span><span class="marquee-dot"></span>
+                    <span>Windows Automation Scripts</span><span class="marquee-dot"></span>
+                    <span>Android STB Tuning</span><span class="marquee-dot"></span>
+                    <span>Firebase &amp; Sheets Sync</span><span class="marquee-dot"></span>
+                    <span>Interactive UI Engineering</span><span class="marquee-dot"></span>
+                </div>
+                <div class="marquee-item">
+                    <span>Full-Stack Web Apps</span><span class="marquee-dot"></span>
+                    <span>Cloud POS Architecture</span><span class="marquee-dot"></span>
+                    <span>Windows Automation Scripts</span><span class="marquee-dot"></span>
+                    <span>Android STB Tuning</span><span class="marquee-dot"></span>
+                    <span>Firebase &amp; Sheets Sync</span><span class="marquee-dot"></span>
+                    <span>Interactive UI Engineering</span><span class="marquee-dot"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 02. KARYA YANG BICARA (ASYMMETRIC BENTO + UI MOCKUPS) ==================== -->
+        <section id="karya" data-section="karya" class="py-24">
             <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12 reveal-item">
                     <div>
                         <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">02 // Selected Works</p>
                         <h2 class="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight text-white">
@@ -667,7 +935,7 @@
                         </h2>
                     </div>
 
-                    <!-- Filter Kategori Interaktif Liquid Glass -->
+                    <!-- Filter Kategori Interaktif -->
                     <div class="flex flex-wrap gap-2.5" id="projectFilters" role="tablist" aria-label="Filter Proyek">
                         <button type="button" class="filter-pill active" data-filter="all">Semua</button>
                         <button type="button" class="filter-pill" data-filter="web">Web &amp; Cloud</button>
@@ -677,17 +945,50 @@
                     </div>
                 </div>
 
-                <!-- Grid 5 Kartu Proyek Liquid Glass -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projectsGrid">
+                <!-- Asymmetric Bento Grid (12 Kolom: 2 Featured Card Lebar + 4 Compact Card) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6" id="projectsGrid">
 
-                    <!-- Proyek 01 -->
-                    <article class="liquid-glass project-card p-7 flex flex-col justify-between" data-category="web">
+                    <!-- Proyek 01 (Featured Bento 6 Kolom dengan Mini UI Preview POS) -->
+                    <article class="liquid-glass project-card reveal-item lg:col-span-6 p-7 sm:p-8 flex flex-col justify-between" data-category="web">
                         <div>
-                            <div class="flex items-center justify-between mb-6">
-                                <span class="display-num text-4xl text-[#dc2626]">01</span>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-3">
+                                    <span class="display-num text-4xl text-[#dc2626]">01</span>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full bg-[#dc2626]/20 border border-[#dc2626]/40 text-[#fca5a5]">Featured Flagship</span>
+                                </div>
                                 <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Web &amp; Cloud</span>
                             </div>
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
+
+                            <!-- Mini Visual Mockup Kasir Arsyla -->
+                            <div class="ui-mockup-frame mb-6">
+                                <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
+                                        <span class="text-[10px] font-mono text-zinc-400 ml-2">kasir-arsyla.app // POS Live</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Sheets Synced
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2.5 text-left">
+                                    <div class="bg-white/[0.04] rounded-lg p-2.5 border border-white/5">
+                                        <span class="text-[9px] uppercase tracking-wider text-zinc-400 block">Status Order</span>
+                                        <span class="text-xs font-extrabold text-emerald-400 mt-0.5 block">SELESAI ✓</span>
+                                    </div>
+                                    <div class="bg-white/[0.04] rounded-lg p-2.5 border border-white/5">
+                                        <span class="text-[9px] uppercase tracking-wider text-zinc-400 block">Database</span>
+                                        <span class="text-xs font-extrabold text-white mt-0.5 block">Firebase RTDB</span>
+                                    </div>
+                                    <div class="bg-[#dc2626]/15 rounded-lg p-2.5 border border-[#dc2626]/30">
+                                        <span class="text-[9px] uppercase tracking-wider text-zinc-300 block">Duplikasi</span>
+                                        <span class="text-xs font-extrabold text-[#fca5a5] mt-0.5 block">0% Guaranteed</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white mb-2.5 leading-snug">
                                 Kasir Arsyla — Aplikasi Point-of-Sale (POS) Berbasis Web
                             </h3>
                             <p class="text-sm text-zinc-300 leading-relaxed mb-6">
@@ -700,97 +1001,141 @@
                             <span class="tech-tag">Firebase Realtime DB</span>
                             <span class="tech-tag">Google Spreadsheets</span>
                             <span class="tech-tag">Netlify</span>
-                            <span class="tech-tag">Built by TonyDev</span>
                         </div>
                     </article>
 
-                    <!-- Proyek 02 -->
-                    <article class="liquid-glass project-card p-7 flex flex-col justify-between" data-category="web">
+                    <!-- Proyek 02 (Featured Bento 6 Kolom dengan Mini UI Preview DompetKu) -->
+                    <article class="liquid-glass project-card reveal-item lg:col-span-6 p-7 sm:p-8 flex flex-col justify-between" data-category="web">
                         <div>
-                            <div class="flex items-center justify-between mb-6">
-                                <span class="display-num text-4xl text-[#dc2626]">02</span>
+                            <div class="flex items-center justify-between mb-5">
+                                <div class="flex items-center gap-3">
+                                    <span class="display-num text-4xl text-[#dc2626]">02</span>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">FinTech UI</span>
+                                </div>
                                 <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Web &amp; Cloud</span>
                             </div>
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
-                                DompetKu — Aplikasi Manajemen Keuangan
+
+                            <!-- Mini Visual Mockup DompetKu -->
+                            <div class="ui-mockup-frame mb-6">
+                                <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
+                                        <span class="text-[10px] font-mono text-zinc-400 ml-2">dompetku.pwa // Savings Goal</span>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-zinc-300">PIN Locked 🔒</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="text-zinc-400 font-medium">Target Tabungan Operasional</span>
+                                        <span class="text-white font-extrabold">78% Tercapai</span>
+                                    </div>
+                                    <div class="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                                        <div class="h-full w-[78%] rounded-full bg-gradient-to-r from-[#dc2626] to-[#f87171]"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white mb-2.5 leading-snug">
+                                DompetKu — Aplikasi Manajemen Keuangan Pribadi
                             </h3>
                             <p class="text-sm text-zinc-300 leading-relaxed mb-6">
-                                Aplikasi pencatatan arus kas pribadi dan operasional dengan pengelompokan kategori pemasukan serta pengeluaran yang terstruktur, menyajikan ringkasan saldo secara <em>real-time</em> dalam antarmuka modern yang mudah dipantau.
+                                Aplikasi pencatatan arus kas pribadi dan operasional usaha dengan pengelompokan kategori pemasukan serta pengeluaran yang terstruktur. Dilengkapi fitur pelacakan <strong class="text-white">Target Tabungan</strong> (<em>Savings Goals</em>), keamanan kunci PIN, serta ringkasan saldo <em>real-time</em> dalam antarmuka modern yang ringan dan responsif.
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                            <span class="tech-tag">Web App</span>
+                            <span class="tech-tag">HTML5</span>
+                            <span class="tech-tag">Tailwind CSS</span>
                             <span class="tech-tag">JavaScript</span>
-                            <span class="tech-tag">Cloud Sync</span>
-                            <span class="tech-tag">UI/UX</span>
-                            <span class="tech-tag">Built by TonyDev</span>
+                            <span class="tech-tag">Savings Tracker</span>
+                            <span class="tech-tag">PWA Ready</span>
                         </div>
                     </article>
 
-                    <!-- Proyek 03 -->
-                    <article class="liquid-glass project-card p-7 flex flex-col justify-between" data-category="automation">
+                    <!-- Proyek 03 (Compact 3 Kolom) -->
+                    <article class="liquid-glass project-card reveal-item lg:col-span-3 p-6 flex flex-col justify-between" data-category="automation">
                         <div>
-                            <div class="flex items-center justify-between mb-6">
-                                <span class="display-num text-4xl text-[#dc2626]">03</span>
-                                <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Otomatisasi</span>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="display-num text-3xl text-[#dc2626]">03</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Otomatisasi</span>
                             </div>
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
+                            <h3 class="text-lg font-extrabold text-white mb-2.5 leading-snug">
                                 Skrip Otomatisasi Manajemen File Windows
                             </h3>
-                            <p class="text-sm text-zinc-300 leading-relaxed mb-6">
-                                <em>Single-execution script</em> yang memindai, mengelompokkan, dan merapikan seluruh berkas di direktori <em>Downloads</em> secara otomatis berdasarkan kategori ekstensi file, lalu menghentikan prosesnya sendiri agar hemat sumber daya sistem.
+                            <p class="text-xs sm:text-sm text-zinc-300 leading-relaxed mb-5">
+                                <em>Single-execution script</em> yang memindai, mengelompokkan, dan merapikan seluruh berkas di direktori <em>Downloads</em> secara otomatis berdasarkan kategori ekstensi file, lalu menghentikan prosesnya sendiri agar hemat sumber daya.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                            <span class="tech-tag">Windows Batch</span>
+                        <div class="flex flex-wrap gap-1.5 pt-3.5 border-t border-white/10">
+                            <span class="tech-tag">Batch</span>
                             <span class="tech-tag">PowerShell</span>
-                            <span class="tech-tag">File Automation</span>
-                            <span class="tech-tag">Built by TonyDev</span>
+                            <span class="tech-tag">Automation</span>
                         </div>
                     </article>
 
-                    <!-- Proyek 04 -->
-                    <article class="liquid-glass project-card p-7 flex flex-col justify-between" data-category="system">
+                    <!-- Proyek 04 (Compact 3 Kolom) -->
+                    <article class="liquid-glass project-card reveal-item lg:col-span-3 p-6 flex flex-col justify-between" data-category="system">
                         <div>
-                            <div class="flex items-center justify-between mb-6">
-                                <span class="display-num text-4xl text-[#dc2626]">04</span>
-                                <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Sistem &amp; STB</span>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="display-num text-3xl text-[#dc2626]">04</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Sistem &amp; STB</span>
                             </div>
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
+                            <h3 class="text-lg font-extrabold text-white mb-2.5 leading-snug">
                                 Kustomisasi &amp; Optimasi Sistem Android STB
                             </h3>
-                            <p class="text-sm text-zinc-300 leading-relaxed mb-6">
-                                Konfigurasi mendalam dan modifikasi perangkat Android Set-Top Box (Polytron/ZTE STB) serta Smart TV melalui ADB, meliputi manajemen paket sistem, pemasangan <em>custom launcher</em> ringan, dan integrasi transfer data lintas perangkat.
+                            <p class="text-xs sm:text-sm text-zinc-300 leading-relaxed mb-5">
+                                Konfigurasi mendalam dan modifikasi perangkat Android Set-Top Box (Polytron/ZTE STB) serta Smart TV melalui ADB, meliputi manajemen paket sistem, pemasangan <em>custom launcher</em> ringan, dan transfer data lintas perangkat.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-2 pt-4 border-t border-white/10">
+                        <div class="flex flex-wrap gap-1.5 pt-3.5 border-t border-white/10">
                             <span class="tech-tag">ADB</span>
                             <span class="tech-tag">Custom Launcher</span>
                             <span class="tech-tag">Smart TV</span>
-                            <span class="tech-tag">System Tuning</span>
-                            <span class="tech-tag">Built by TonyDev</span>
                         </div>
                     </article>
 
-                    <!-- Proyek 05 -->
-                    <article class="liquid-glass project-card p-7 flex flex-col justify-between" data-category="creative">
+                    <!-- Proyek 05 (Compact 3 Kolom) -->
+                    <article class="liquid-glass project-card reveal-item lg:col-span-3 p-6 flex flex-col justify-between" data-category="creative">
                         <div>
-                            <div class="flex items-center justify-between mb-6">
-                                <span class="display-num text-4xl text-[#dc2626]">05</span>
-                                <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Kreatif</span>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="display-num text-3xl text-[#dc2626]">05</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Kreatif</span>
                             </div>
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
+                            <h3 class="text-lg font-extrabold text-white mb-2.5 leading-snug">
                                 Website Interaktif &amp; Aset Visual Digital
                             </h3>
-                            <p class="text-sm text-zinc-300 leading-relaxed mb-6">
+                            <p class="text-xs sm:text-sm text-zinc-300 leading-relaxed mb-5">
                                 Eksplorasi pengembangan halaman web interaktif berbasis peramban yang memuat elemen <em>mini-game</em> seru, dipadukan dengan perancangan identitas visual dan logo berlatar transparan untuk kebutuhan <em>branding</em> usaha kopi.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-2 pt-4 border-t border-white/10">
+                        <div class="flex flex-wrap gap-1.5 pt-3.5 border-t border-white/10">
                             <span class="tech-tag">HTML/CSS/JS</span>
-                            <span class="tech-tag">Mini-Game Web</span>
-                            <span class="tech-tag">Branding Design</span>
-                            <span class="tech-tag">Built by TonyDev</span>
+                            <span class="tech-tag">Mini-Game</span>
+                            <span class="tech-tag">Branding</span>
+                        </div>
+                    </article>
+
+                    <!-- Proyek 06 (Compact 3 Kolom) -->
+                    <article class="liquid-glass project-card reveal-item lg:col-span-3 p-6 flex flex-col justify-between" data-category="creative">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <span class="display-num text-3xl text-[#dc2626]">06</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">Kreatif</span>
+                            </div>
+                            <h3 class="text-lg font-extrabold text-white mb-2.5 leading-snug">
+                                Swarm Builder — Simulasi &amp; Animasi Interaktif
+                            </h3>
+                            <p class="text-xs sm:text-sm text-zinc-300 leading-relaxed mb-4">
+                                Simulasi interaktif yang menampilkan agen-agen virtual bergerak dan membangun ulang visual portfolio secara dinamis.
+                            </p>
+                            <a id="swarmBuilderPlay" href="https://ahmadftn08-sketch.github.io/Portofolio/?swarm=play" target="_blank" rel="noopener noreferrer" class="btn-liquid-primary !py-2.5 !px-4 !text-xs w-full mb-5">
+                                Coba Bangun Web
+                            </a>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-3.5 border-t border-white/10">
+                            <span class="tech-tag">HTML5 Canvas</span>
+                            <span class="tech-tag">Interactive JS</span>
                         </div>
                     </article>
 
@@ -798,138 +1143,126 @@
             </div>
         </section>
 
-        <!-- ==================== 4. THE WORK. THE RECOGNITION. ==================== -->
-        <section id="pencapaian" class="py-24 border-t border-white/10">
+        <!-- ==================== 03. THE WORK. THE RECOGNITION. (EDITORIAL INDEX LIST — TANPA KOTAK) ==================== -->
+        <section id="pencapaian" data-section="pencapaian" class="py-24 border-t border-white/10">
             <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <!-- Header Editorial Bersih -->
-                <div class="max-w-2xl mb-14">
-                    <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">03 // Core Focus &amp; Impact</p>
-                    <h2 class="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight leading-tight text-white">
-                        The Work. <span class="text-[#dc2626]">The Recognition.</span>
-                    </h2>
-                    <p class="text-zinc-300 text-sm sm:text-base leading-relaxed mt-3">
-                        Empat pencapaian dan fokus eksekusi utama yang menggabungkan rekayasa web modern, otomatisasi sistem, serta kontribusi operasional toko dan usaha di lapangan.
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14 reveal-item">
+                    <div class="max-w-2xl">
+                        <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">03 // Core Focus &amp; Impact</p>
+                        <h2 class="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight leading-tight text-white">
+                            The Work. <span class="text-[#dc2626]">The Recognition.</span>
+                        </h2>
+                    </div>
+                    <p class="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-md">
+                        Empat pilar eksekusi utama yang memadukan rekayasa web modern, otomatisasi sistem, dan operasional ritel di lapangan.
                     </p>
                 </div>
 
-                <!-- Grid Bento 2x2 Kartu Liquid Glass -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Kartu 01 -->
-                    <article class="liquid-glass project-card p-7 sm:p-8 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-3 mb-6">
-                                <div class="flex items-center gap-3">
-                                    <span class="display-num text-3xl sm:text-4xl text-[#dc2626]">01</span>
-                                    <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">
-                                        Web &amp; Cloud
-                                    </span>
-                                </div>
-                                <span class="text-xs font-extrabold tracking-widest uppercase text-zinc-400">2025 — 2026</span>
-                            </div>
-
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
+                <!-- Daftar Indeks Editorial Bersih dengan Garis Pemisah Tipis -->
+                <div class="flex flex-col">
+                    <!-- Baris 01 -->
+                    <div class="editorial-row reveal-item grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start lg:items-center">
+                        <div class="lg:col-span-2 flex items-center gap-4">
+                            <span class="editorial-row-num">01</span>
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">2025 — 2026</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#dc2626] block mb-1">Web &amp; Cloud</span>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-white leading-snug">
                                 Sistem POS &amp; Cloud Integration — Kasir Arsyla
                             </h3>
+                        </div>
+                        <div class="lg:col-span-4">
                             <p class="text-sm text-zinc-300 leading-relaxed">
-                                Merancang arsitektur kasir berbasis web secara mandiri untuk membantu kelancaran operasional toko dengan <strong class="text-white">Firebase Realtime Database</strong> serta mekanisme sinkronisasi otomatis ke <strong class="text-white">Google Spreadsheets</strong> yang hanya terpicu saat pesanan berstatus <em>selesai</em> untuk menjaga kebersihan data pembukuan.
+                                Arsitektur kasir berbasis web dengan <strong class="text-white">Firebase Realtime Database</strong> dan sinkronisasi otomatis ke <strong class="text-white">Google Spreadsheets</strong> hanya saat pesanan berstatus <em>selesai</em>.
                             </p>
                         </div>
-
-                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                            <span class="text-zinc-400 font-medium">Dampak Utama</span>
-                            <span class="text-white font-bold">Zero Duplicate &amp; Real-Time Sync</span>
+                        <div class="lg:col-span-2 lg:text-right">
+                            <span class="inline-block text-xs font-bold text-white px-3 py-1 rounded-full bg-white/[0.06] border border-white/10">
+                                Zero Duplicate Sync
+                            </span>
                         </div>
-                    </article>
+                    </div>
 
-                    <!-- Kartu 02 -->
-                    <article class="liquid-glass project-card p-7 sm:p-8 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-3 mb-6">
-                                <div class="flex items-center gap-3">
-                                    <span class="display-num text-3xl sm:text-4xl text-[#dc2626]">02</span>
-                                    <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">
-                                        FinTech App
-                                    </span>
-                                </div>
-                                <span class="text-xs font-extrabold tracking-widest uppercase text-zinc-400">2026</span>
-                            </div>
-
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
+                    <!-- Baris 02 -->
+                    <div class="editorial-row reveal-item grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start lg:items-center">
+                        <div class="lg:col-span-2 flex items-center gap-4">
+                            <span class="editorial-row-num">02</span>
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">2026</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#dc2626] block mb-1">FinTech App</span>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-white leading-snug">
                                 Aplikasi Manajemen Arus Kas — DompetKu
                             </h3>
+                        </div>
+                        <div class="lg:col-span-4">
                             <p class="text-sm text-zinc-300 leading-relaxed">
-                                Membangun solusi web pencatatan keuangan yang ringkas dengan kategorisasi transaksi masuk dan keluar secara <em>real-time</em> untuk mempermudah pemantauan saldo harian serta evaluasi arus kas.
+                                Solusi web pencatatan keuangan ringkas dengan kategorisasi transaksi masuk dan keluar secara <em>real-time</em> serta pelacakan target tabungan harian.
                             </p>
                         </div>
-
-                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                            <span class="text-zinc-400 font-medium">Dampak Utama</span>
-                            <span class="text-white font-bold">Kontrol Arus Kas Terstruktur</span>
+                        <div class="lg:col-span-2 lg:text-right">
+                            <span class="inline-block text-xs font-bold text-white px-3 py-1 rounded-full bg-white/[0.06] border border-white/10">
+                                Kontrol Arus Kas
+                            </span>
                         </div>
-                    </article>
+                    </div>
 
-                    <!-- Kartu 03 -->
-                    <article class="liquid-glass project-card p-7 sm:p-8 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-3 mb-6">
-                                <div class="flex items-center gap-3">
-                                    <span class="display-num text-3xl sm:text-4xl text-[#dc2626]">03</span>
-                                    <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">
-                                        System &amp; Automation
-                                    </span>
-                                </div>
-                                <span class="text-xs font-extrabold tracking-widest uppercase text-zinc-400">2024 — 2026</span>
-                            </div>
-
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
-                                Otomatisasi &amp; Konfigurasi Sistem — Windows &amp; Android STB
+                    <!-- Baris 03 -->
+                    <div class="editorial-row reveal-item grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start lg:items-center">
+                        <div class="lg:col-span-2 flex items-center gap-4">
+                            <span class="editorial-row-num">03</span>
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-zinc-400">2024 — 2026</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#dc2626] block mb-1">System &amp; Automation</span>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-white leading-snug">
+                                Otomatisasi &amp; Konfigurasi — Windows &amp; Android STB
                             </h3>
+                        </div>
+                        <div class="lg:col-span-4">
                             <p class="text-sm text-zinc-300 leading-relaxed">
-                                Membangun <em>single-execution script</em> pembersih dan pengelompok direktori <em>Downloads</em> secara otomatis berdasarkan tipe ekstensi, serta melakukan optimasi perangkat Android Set-Top Box dan Smart TV melalui <strong class="text-white">ADB</strong> dan <strong class="text-white">Custom Launcher</strong>.
+                                <em>Single-execution script</em> pembersih direktori <em>Downloads</em> otomatis serta optimasi perangkat Android Set-Top Box dan Smart TV via <strong class="text-white">ADB</strong>.
                             </p>
                         </div>
-
-                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                            <span class="text-zinc-400 font-medium">Dampak Utama</span>
-                            <span class="text-white font-bold">Efisiensi Perangkat &amp; Hemat Resource</span>
+                        <div class="lg:col-span-2 lg:text-right">
+                            <span class="inline-block text-xs font-bold text-white px-3 py-1 rounded-full bg-white/[0.06] border border-white/10">
+                                Hemat Resource
+                            </span>
                         </div>
-                    </article>
+                    </div>
 
-                    <!-- Kartu 04 -->
-                    <article class="liquid-glass project-card p-7 sm:p-8 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between gap-3 mb-6">
-                                <div class="flex items-center gap-3">
-                                    <span class="display-num text-3xl sm:text-4xl text-[#dc2626]">04</span>
-                                    <span class="text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/10 border border-white/15 text-zinc-200">
-                                        Store &amp; Field Ops
-                                    </span>
-                                </div>
-                                <span class="text-xs font-extrabold tracking-widest uppercase text-[#dc2626]">Active</span>
-                            </div>
-
-                            <h3 class="text-xl font-extrabold text-white mb-2.5 leading-snug">
-                                Staf Operasional &amp; Dukungan Sistem Digital — Arsyla Jewelry &amp; Silver
+                    <!-- Baris 04 -->
+                    <div class="editorial-row reveal-item grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start lg:items-center">
+                        <div class="lg:col-span-2 flex items-center gap-4">
+                            <span class="editorial-row-num">04</span>
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#dc2626]">Active</span>
+                        </div>
+                        <div class="lg:col-span-4">
+                            <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#dc2626] block mb-1">Store &amp; Field Ops</span>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-white leading-snug">
+                                Staf Operasional &amp; Dukungan Digital — Arsyla Jewelry &amp; Silver
                             </h3>
+                        </div>
+                        <div class="lg:col-span-4">
                             <p class="text-sm text-zinc-300 leading-relaxed">
-                                Bekerja sebagai karyawan operasional di toko ritel perhiasan perak <em>Arsyla Jewelry &amp; Silver</em> sekaligus menciptakan sistem kasir digitalnya, ditambah pengalaman menjalankan usaha kuliner malam dan racikan minuman espresso manual.
+                                Menangani operasional toko perhiasan perak sekaligus membangun sistem kasir digitalnya, ditambah pengalaman usaha kuliner malam dan racikan espresso manual.
                             </p>
                         </div>
-
-                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs">
-                            <span class="text-zinc-400 font-medium">Dampak Utama</span>
-                            <span class="text-white font-bold">Sinergi Teknologi &amp; Operasi Toko</span>
+                        <div class="lg:col-span-2 lg:text-right">
+                            <span class="inline-block text-xs font-bold text-white px-3 py-1 rounded-full bg-white/[0.06] border border-white/10">
+                                Sinergi Toko &amp; Tech
+                            </span>
                         </div>
-                    </article>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- ==================== 5. FROM RAW. TO REAL. & BUKAN SEKADAR VISUAL ==================== -->
-        <section id="tentang" class="py-24 border-t border-white/10">
+        <!-- ==================== 04. FROM RAW. TO REAL. (OPEN TYPOGRAPHY KIRI + STICKY MANIFESTO KANAN) ==================== -->
+        <section id="tentang" data-section="tentang" class="py-24 border-t border-white/10">
             <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <!-- Header Editorial -->
-                <div class="max-w-3xl mb-14">
+                <div class="max-w-3xl mb-14 reveal-item">
                     <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">04 // Behind The Craft</p>
                     <h2 class="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight leading-tight text-white">
                         From Raw. <span class="text-[#dc2626]">To Real.</span>
@@ -939,20 +1272,19 @@
                     </p>
                 </div>
 
-                <!-- Arsitektur Layout 2 Kolom Presisi (Kiri 7 Kolom, Kanan 5 Kolom Sticky) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
 
-                    <!-- Kolom Kiri (7 Kolom): 2 Kartu Liquid Glass Rapi -->
-                    <div class="lg:col-span-7 flex flex-col gap-6">
+                    <!-- Kolom Kiri (7 Kolom): Tipografi Terbuka dengan Aksen Garis Kiri (Lebih Lega Tanpa Kotak Bertumpuk) -->
+                    <div class="lg:col-span-7 space-y-12">
 
-                        <!-- Kartu 01: Latar Belakang & Pendidikan (SMA di Kota Metro, Lampung) -->
-                        <div class="liquid-glass p-7 sm:p-8">
-                            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <!-- Bagian 01: Latar Belakang & Pendidikan -->
+                        <div class="reveal-item">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                                 <span class="text-xs font-extrabold uppercase tracking-widest text-[#dc2626] flex items-center gap-2">
                                     <span class="w-2 h-2 rounded-full bg-[#dc2626]"></span>
                                     01 // Latar Belakang &amp; Pendidikan
                                 </span>
-                                <span class="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
                                     Kota Metro, Lampung
                                 </span>
                             </div>
@@ -965,9 +1297,9 @@
                             </p>
                         </div>
 
-                        <!-- Kartu 02: Pengalaman Praktik & Usaha -->
-                        <div class="liquid-glass p-7 sm:p-8">
-                            <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                        <!-- Bagian 02: Pengalaman Praktik & Usaha -->
+                        <div class="reveal-item pt-8 border-t border-white/10">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-7">
                                 <span class="text-xs font-extrabold uppercase tracking-widest text-[#dc2626] flex items-center gap-2">
                                     <span class="w-2 h-2 rounded-full bg-[#dc2626]"></span>
                                     02 // Pengalaman Praktik &amp; Usaha
@@ -977,24 +1309,24 @@
                                 </span>
                             </div>
 
-                            <div class="space-y-6">
+                            <div class="space-y-8">
                                 <!-- Item 1 -->
-                                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 border-l-4 border-l-[#dc2626]">
+                                <div class="pl-5 border-l-2 border-[#dc2626]">
                                     <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
                                         <h4 class="text-base sm:text-lg font-extrabold text-white">Staf Operasional &amp; Web Developer — Arsyla Jewelry &amp; Silver</h4>
-                                        <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#dc2626]/20 border border-[#dc2626]/40 text-[#fca5a5]">Ritel Perhiasan</span>
+                                        <span class="text-[11px] font-bold uppercase tracking-wider text-[#fca5a5]">Ritel Perhiasan</span>
                                     </div>
-                                    <p class="text-xs font-medium text-zinc-400 mb-2.5">Karyawan Operasional &amp; Kreator Sistem Kasir Web</p>
+                                    <p class="text-xs font-medium text-zinc-400 mb-2">Karyawan Operasional &amp; Kreator Sistem Kasir Web</p>
                                     <p class="text-sm text-zinc-300 leading-relaxed">
                                         Bekerja sebagai karyawan yang menangani operasional harian toko perhiasan perak, mulai dari pelayanan pelanggan secara langsung, penataan serta pengecekan stok produk, hingga merancang dan mengoperasikan aplikasi kasir web <em>Kasir Arsyla</em> untuk membantu efisiensi pencatatan transaksi toko.
                                     </p>
                                 </div>
 
                                 <!-- Item 2 -->
-                                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 border-l-4 border-l-white/30">
-                                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <div class="pl-5 border-l-2 border-white/25">
+                                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                                         <h4 class="text-base sm:text-lg font-extrabold text-white">Operasional Usaha F&amp;B &amp; Manual Espresso Brewing</h4>
-                                        <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-zinc-300">Kuliner &amp; Minuman</span>
+                                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Kuliner &amp; Minuman</span>
                                     </div>
                                     <p class="text-sm text-zinc-300 leading-relaxed">
                                         Menjalankan kedai kuliner malam (kebab) secara mandiri serta mengeksplorasi teknik seduh dan peracikan minuman berbasis espresso manual dengan kontrol kualitas penyajian yang konsisten.
@@ -1002,10 +1334,10 @@
                                 </div>
 
                                 <!-- Item 3 -->
-                                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/10 border-l-4 border-l-white/30">
-                                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <div class="pl-5 border-l-2 border-white/25">
+                                    <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                                         <h4 class="text-base sm:text-lg font-extrabold text-white">Praktik Teknis &amp; Otomatisasi Sistem</h4>
-                                        <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-zinc-300">Technical Discipline</span>
+                                        <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Technical Discipline</span>
                                     </div>
                                     <p class="text-sm text-zinc-300 leading-relaxed">
                                         Menerapkan prosedur kerja lapangan yang disiplin, diagnosis gangguan perangkat keras maupun sistem Android STB/Windows, serta penyusunan dokumentasi laporan teknis berbasis video.
@@ -1016,9 +1348,9 @@
 
                     </div>
 
-                    <!-- Kolom Kanan (5 Kolom, Sticky di Desktop): Kartu Manifesto / Filosofi Kerja Red Liquid Glass -->
+                    <!-- Kolom Kanan (5 Kolom, Sticky): Kartu Manifesto Red Liquid Glass sebagai Anchor Visual -->
                     <div class="lg:col-span-5 lg:sticky lg:top-28">
-                        <div class="quote-card-red p-8 sm:p-9 flex flex-col justify-between">
+                        <div class="quote-card-red reveal-item p-8 sm:p-9 flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between mb-6">
                                     <span class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#f87171]">
@@ -1037,9 +1369,8 @@
                                 </p>
                             </div>
 
-                            <!-- Signature Editorial & Tombol Aksi -->
                             <div class="mt-8 pt-6 border-t border-white/15 flex flex-wrap items-center justify-between gap-4">
-                                <div class="quote-signature">Ahmad Fatoni</div>
+                                <div class="quote-signature">TonyDev</div>
                                 <a href="#kontak" class="btn-liquid-primary !py-2 !px-4 !text-[11px]">
                                     Diskusi Proyek
                                 </a>
@@ -1051,48 +1382,53 @@
             </div>
         </section>
 
-        <!-- ==================== 6. TERUS BERGERAK. TERUS BERKARYA. ==================== -->
-        <section id="perjalanan" class="py-24 border-t border-white/10">
+        <!-- ==================== 05. TERUS BERGERAK. TERUS BERKARYA. (OPEN VERTICAL TIMELINE + TECH STACK) ==================== -->
+        <section id="perjalanan" data-section="perjalanan" class="py-24 border-t border-white/10">
             <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <div class="mb-12">
-                    <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">04 // Journey &amp; Arsenal</p>
+                <div class="mb-14 reveal-item">
+                    <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">05 // Journey &amp; Arsenal</p>
                     <h2 class="text-3xl sm:text-5xl font-extrabold uppercase tracking-tight leading-tight text-white">
                         Terus Bergerak.<br>
                         <span class="text-[#dc2626]">Terus Berkarya.</span>
                     </h2>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    <!-- Timeline Perjalanan 2024–2026 -->
-                    <div class="lg:col-span-7 flex flex-col gap-5">
-                        <div class="liquid-glass p-6 sm:p-7 border-l-4 border-l-[#dc2626]">
-                            <span class="display-num text-2xl text-[#dc2626]">2026</span>
-                            <h3 class="text-lg font-extrabold text-white mt-1">Peluncuran Kasir Arsyla &amp; DompetKu</h3>
-                            <p class="text-sm text-zinc-300 mt-2 leading-relaxed">
-                                Mengintegrasikan aplikasi Point-of-Sale berbasis web dengan Firebase Realtime Database dan Google Spreadsheets otomatis, serta merilis aplikasi manajemen keuangan DompetKu.
-                            </p>
-                        </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+                    <!-- Open Vertical Timeline 2024–2026 (Tanpa Kotak) -->
+                    <div class="lg:col-span-7">
+                        <div class="open-timeline">
+                            <div class="timeline-node is-current reveal-item">
+                                <div class="flex items-center gap-3 mb-1">
+                                    <span class="display-num text-3xl text-[#dc2626]">2026</span>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-[#dc2626]/20 border border-[#dc2626]/40 text-[#fca5a5]">Latest Milestone</span>
+                                </div>
+                                <h3 class="text-xl font-extrabold text-white">Peluncuran Kasir Arsyla &amp; DompetKu</h3>
+                                <p class="text-sm text-zinc-300 mt-2 leading-relaxed max-w-xl">
+                                    Mengintegrasikan aplikasi Point-of-Sale berbasis web dengan Firebase Realtime Database dan Google Spreadsheets otomatis, serta merilis aplikasi manajemen keuangan DompetKu.
+                                </p>
+                            </div>
 
-                        <div class="liquid-glass p-6 sm:p-7">
-                            <span class="display-num text-2xl text-white">2025</span>
-                            <h3 class="text-lg font-extrabold text-white mt-1">Staf Operasional Ritel &amp; Usaha Kuliner</h3>
-                            <p class="text-sm text-zinc-300 mt-2 leading-relaxed">
-                                Bekerja sebagai karyawan operasional di toko ritel perhiasan perak <em>Arsyla Jewelry &amp; Silver</em> sekaligus menjalankan usaha kuliner kebab malam dan eksplorasi racikan kopi manual.
-                            </p>
-                        </div>
+                            <div class="timeline-node reveal-item">
+                                <span class="display-num text-3xl text-white block mb-1">2025</span>
+                                <h3 class="text-xl font-extrabold text-white">Staf Operasional Ritel &amp; Usaha Kuliner</h3>
+                                <p class="text-sm text-zinc-300 mt-2 leading-relaxed max-w-xl">
+                                    Bekerja sebagai karyawan operasional di toko ritel perhiasan perak <em>Arsyla Jewelry &amp; Silver</em> sekaligus menjalankan usaha kuliner kebab malam dan eksplorasi racikan kopi manual.
+                                </p>
+                            </div>
 
-                        <div class="liquid-glass p-6 sm:p-7">
-                            <span class="display-num text-2xl text-white">2024</span>
-                            <h3 class="text-lg font-extrabold text-white mt-1">Mulai Mendalami Web Development di SMA Kota Metro</h3>
-                            <p class="text-sm text-zinc-300 mt-2 leading-relaxed">
-                                Mengarahkan minat pemrograman yang sudah ditekuni sejak SD ke pengembangan web modern saat bersekolah SMA di Kota Metro, Lampung, diiringi pembuatan skrip otomatisasi Windows dan eksperimen sistem Android STB.
-                            </p>
+                            <div class="timeline-node reveal-item">
+                                <span class="display-num text-3xl text-white/75 block mb-1">2024</span>
+                                <h3 class="text-xl font-extrabold text-white">Mulai Mendalami Web Development di SMA Kota Metro</h3>
+                                <p class="text-sm text-zinc-300 mt-2 leading-relaxed max-w-xl">
+                                    Mengarahkan minat pemrograman yang sudah ditekuni sejak SD ke pengembangan web modern saat bersekolah SMA di Kota Metro, Lampung, diiringi pembuatan skrip otomatisasi Windows dan eksperimen sistem Android STB.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Panel Liquid Glass Tools & Tech Stack -->
+                    <!-- Panel Liquid Glass Tools & Tech Stack (Kontras dengan Timeline Terbuka di Kiri) -->
                     <div class="lg:col-span-5">
-                        <div class="liquid-glass p-7 sm:p-8">
+                        <div class="liquid-glass reveal-item p-7 sm:p-8">
                             <h3 class="text-sm font-extrabold uppercase tracking-widest text-[#dc2626] mb-2">
                                 Tools &amp; Tech Stack
                             </h3>
@@ -1123,139 +1459,86 @@
             </div>
         </section>
 
-        <!-- ==================== 7. LET'S WORK TOGETHER. ==================== -->
-        <section id="kontak" class="py-24 border-t border-white/10">
+        <!-- ==================== 06. LET'S WORK TOGETHER. (INTERACTIVE DIRECTORY + NEON CTA CARD) ==================== -->
+        <section id="kontak" data-section="kontak" class="py-24 border-t border-white/10">
             <div class="max-w-7xl mx-auto px-5 sm:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
 
-                    <!-- Kolom Kiri (7 Kolom): Header + Pengantar + Grid 2x2 Kartu Kontak Liquid Glass -->
+                    <!-- Kolom Kiri (7 Kolom): Direktori Kontak Interaktif Bersih (Tanpa 4 Kotak Terpisah) -->
                     <div class="lg:col-span-7 flex flex-col justify-between">
-                        <div class="mb-8">
+                        <div class="mb-8 reveal-item">
                             <p class="text-[#dc2626] text-xs font-extrabold uppercase tracking-[0.2em] mb-2">
-                                05 // Contact &amp; Collaboration
+                                06 // Contact &amp; Collaboration
                             </p>
                             <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight leading-none text-white">
                                 Let's Work <span class="text-[#dc2626]">Together.</span>
                             </h2>
                             <p class="text-zinc-300 text-sm sm:text-base leading-relaxed mt-4 max-w-2xl">
-                                Siap berkolaborasi untuk pengembangan aplikasi web UMKM, sistem kasir terintegrasi cloud, skrip otomatisasi kerja, maupun diskusi teknis dan peluang bisnis. Pilih jalur komunikasi tercepat di bawah ini:
+                                Siap berkolaborasi untuk pengembangan aplikasi web UMKM, sistem kasir terintegrasi cloud, skrip otomatisasi kerja, maupun diskusi teknis dan peluang bisnis.
                             </p>
                         </div>
 
-                        <!-- Grid Simetris 2x2 Kartu Kontak Liquid Glass -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Kartu Email -->
-                            <div class="liquid-glass contact-item-card p-5 flex flex-col justify-between gap-4">
-                                <div class="flex items-start gap-3.5 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl bg-[#dc2626]/15 border border-[#dc2626]/35 flex items-center justify-center text-[#ef4444] shrink-0">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
-                                        </svg>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] block">Email</span>
-                                        <span class="text-sm sm:text-base font-bold text-white block truncate mt-0.5" title="ahmadftoni22@gmail.com">
-                                            ahmadftoni22@gmail.com
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between pt-3 border-t border-white/10">
-                                    <span class="text-[11px] text-zinc-400 font-medium">Respon Cepat</span>
-                                    <div class="flex items-center gap-2">
-                                        <a href="mailto:ahmadftoni22@gmail.com" class="btn-liquid-primary !py-1.5 !px-3.5 !text-[11px]">Buka</a>
-                                        <button type="button" class="btn-liquid-outline !py-1.5 !px-3.5 !text-[11px] copy-trigger" data-copy="ahmadftoni22@gmail.com" data-label="Email">
-                                            Salin
-                                        </button>
-                                    </div>
-                                </div>
+                        <!-- Direktori Baris Kontak dengan Tombol Salin Cepat -->
+                        <div class="reveal-item">
+                            <!-- Baris Email -->
+                            <div class="contact-directory-row">
+                                <a href="mailto:ahmadftoni22@gmail.com" class="group flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 min-w-0 flex-1 no-underline">
+                                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] w-24 shrink-0">Email</span>
+                                    <span class="text-base sm:text-lg font-bold text-white group-hover:text-[#fca5a5] transition-colors truncate">
+                                        ahmadftoni22@gmail.com
+                                    </span>
+                                </a>
+                                <button type="button" class="copy-icon-btn copy-trigger shrink-0" data-copy="ahmadftoni22@gmail.com" data-label="Email">
+                                    Salin
+                                </button>
                             </div>
 
-                            <!-- Kartu WhatsApp -->
-                            <div class="liquid-glass contact-item-card p-5 flex flex-col justify-between gap-4">
-                                <div class="flex items-start gap-3.5 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl bg-[#dc2626]/15 border border-[#dc2626]/35 flex items-center justify-center text-[#ef4444] shrink-0">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] block">WhatsApp</span>
-                                        <span class="text-sm sm:text-base font-bold text-white block truncate mt-0.5" title="+62 857-6714-8528">
-                                            +62 857-6714-8528
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between pt-3 border-t border-white/10">
-                                    <span class="text-[11px] text-zinc-400 font-medium">Direct Chat</span>
-                                    <div class="flex items-center gap-2">
-                                        <a href="https://wa.me/6285767148528" class="btn-liquid-primary !py-1.5 !px-3.5 !text-[11px]">Buka</a>
-                                        <button type="button" class="btn-liquid-outline !py-1.5 !px-3.5 !text-[11px] copy-trigger" data-copy="+62 857-6714-8528" data-label="Nomor WhatsApp">
-                                            Salin
-                                        </button>
-                                    </div>
-                                </div>
+                            <!-- Baris WhatsApp -->
+                            <div class="contact-directory-row">
+                                <a href="https://wa.me/6285767148528" target="_blank" rel="noopener noreferrer" class="group flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 min-w-0 flex-1 no-underline">
+                                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] w-24 shrink-0">WhatsApp</span>
+                                    <span class="text-base sm:text-lg font-bold text-white group-hover:text-[#fca5a5] transition-colors truncate">
+                                        +62 857-6714-8528
+                                    </span>
+                                </a>
+                                <button type="button" class="copy-icon-btn copy-trigger shrink-0" data-copy="+62 857-6714-8528" data-label="Nomor WhatsApp">
+                                    Salin
+                                </button>
                             </div>
 
-                            <!-- Kartu GitHub -->
-                            <div class="liquid-glass contact-item-card p-5 flex flex-col justify-between gap-4">
-                                <div class="flex items-start gap-3.5 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] block">GitHub</span>
-                                        <span class="text-sm sm:text-base font-bold text-white block truncate mt-0.5" title="github.com/ahmadftn08-sketch">
-                                            github.com/ahmadftn08-sketch
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between pt-3 border-t border-white/10">
-                                    <span class="text-[11px] text-zinc-400 font-medium">Repositories</span>
-                                    <div class="flex items-center gap-2">
-                                        <a href="https://github.com/ahmadftn08-sketch" target="_blank" rel="noopener noreferrer" class="btn-liquid-primary !py-1.5 !px-3.5 !text-[11px]">Buka</a>
-                                        <button type="button" class="btn-liquid-outline !py-1.5 !px-3.5 !text-[11px] copy-trigger" data-copy="https://github.com/ahmadftn08-sketch" data-label="Link GitHub">
-                                            Salin
-                                        </button>
-                                    </div>
-                                </div>
+                            <!-- Baris GitHub -->
+                            <div class="contact-directory-row">
+                                <a href="https://github.com/ahmadftn08-sketch" target="_blank" rel="noopener noreferrer" class="group flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 min-w-0 flex-1 no-underline">
+                                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] w-24 shrink-0">GitHub</span>
+                                    <span class="text-base sm:text-lg font-bold text-white group-hover:text-[#fca5a5] transition-colors truncate">
+                                        github.com/ahmadftn08-sketch
+                                    </span>
+                                </a>
+                                <button type="button" class="copy-icon-btn copy-trigger shrink-0" data-copy="https://github.com/ahmadftn08-sketch" data-label="Link GitHub">
+                                    Salin
+                                </button>
                             </div>
 
-                            <!-- Kartu LinkedIn -->
-                            <div class="liquid-glass contact-item-card p-5 flex flex-col justify-between gap-4">
-                                <div class="flex items-start gap-3.5 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                                        </svg>
-                                    </div>
-                                    <div class="min-w-0 flex-1">
-                                        <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] block">LinkedIn</span>
-                                        <span class="text-sm sm:text-base font-bold text-white block truncate mt-0.5" title="linkedin.com/in/ahmadftn08-sketch">
-                                            linkedin.com/in/ahmadftn08-sketch
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between pt-3 border-t border-white/10">
-                                    <span class="text-[11px] text-zinc-400 font-medium">Network</span>
-                                    <div class="flex items-center gap-2">
-                                        <a href="https://linkedin.com/in/ahmadftn08-sketch" target="_blank" rel="noopener noreferrer" class="btn-liquid-primary !py-1.5 !px-3.5 !text-[11px]">Buka</a>
-                                        <button type="button" class="btn-liquid-outline !py-1.5 !px-3.5 !text-[11px] copy-trigger" data-copy="https://linkedin.com/in/ahmadftn08-sketch" data-label="Link LinkedIn">
-                                            Salin
-                                        </button>
-                                    </div>
-                                </div>
+                            <!-- Baris LinkedIn -->
+                            <div class="contact-directory-row">
+                                <a href="https://linkedin.com/in/ahmadftn08-sketch" target="_blank" rel="noopener noreferrer" class="group flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-5 min-w-0 flex-1 no-underline">
+                                    <span class="text-[11px] font-extrabold uppercase tracking-widest text-[#dc2626] w-24 shrink-0">LinkedIn</span>
+                                    <span class="text-base sm:text-lg font-bold text-white group-hover:text-[#fca5a5] transition-colors truncate">
+                                        linkedin.com/in/ahmadftn08-sketch
+                                    </span>
+                                </a>
+                                <button type="button" class="copy-icon-btn copy-trigger shrink-0" data-copy="https://linkedin.com/in/ahmadftn08-sketch" data-label="Link LinkedIn">
+                                    Salin
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Kolom Kanan (5 Kolom): Kartu Kolaborasi "Open For Projects" dengan Cahaya Neon Merah Berputar -->
-                    <div class="lg:col-span-5 flex">
+                    <div class="lg:col-span-5 flex reveal-item">
                         <div class="neon-card-wrapper">
                             <div class="neon-card-inner p-7 sm:p-9 flex flex-col justify-between">
                                 <div>
-                                    <!-- Baris Status Aktif -->
                                     <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
                                         <span class="text-xs font-extrabold uppercase tracking-widest text-[#dc2626] flex items-center gap-2">
                                             <span class="w-2 h-2 rounded-full bg-[#ff2a2a] shadow-[0_0_10px_#ff2a2a]"></span>
@@ -1274,7 +1557,6 @@
                                         Siap membantu membangun solusi digital yang ringan, cepat, dan langsung terpakai untuk kebutuhan bisnis maupun alur kerja harian:
                                     </p>
 
-                                    <!-- Daftar Layanan Utama -->
                                     <div class="space-y-2.5 mb-7">
                                         <div class="flex items-center gap-2.5 text-xs sm:text-sm text-zinc-200 bg-white/[0.04] border border-white/10 rounded-xl px-3.5 py-2.5">
                                             <span class="w-1.5 h-1.5 rounded-full bg-[#dc2626] shrink-0"></span>
@@ -1291,7 +1573,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Tombol Aksi & Info Wilayah Tanpa Alamat Lengkap -->
                                 <div class="space-y-3 pt-4 border-t border-white/10">
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                         <a href="mailto:ahmadftoni22@gmail.com" class="btn-liquid-primary !px-4 !text-xs text-center">
@@ -1302,7 +1583,7 @@
                                         </a>
                                     </div>
                                     <p class="text-[11px] text-center text-zinc-400 pt-1">
-                                        Tulang Bawang Barat &amp; Lampung, Indonesia — Remote &amp; On-Site Ready
+                                        Tulang Bawang Barat - Lampung - Indonesia. Remote &amp; On-Site Ready
                                     </p>
                                 </div>
                             </div>
@@ -1331,6 +1612,24 @@
     <!-- ==================== JAVASCRIPT INTERAKTIF ==================== -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const swarmPlayLink = document.getElementById('swarmBuilderPlay');
+            if (swarmPlayLink && window.location.protocol === 'file:') {
+                const localDemoUrl = new URL(window.location.href);
+                localDemoUrl.search = 'swarm=play';
+                localDemoUrl.hash = '';
+                swarmPlayLink.href = localDemoUrl.href;
+            }
+
+            if (new URLSearchParams(window.location.search).get('swarm') === 'play') {
+                const swarmScript = document.createElement('script');
+                swarmScript.src = 'https://www.duingzforge.site/kit/portfolio/swarm-play.js';
+                swarmScript.async = true;
+                swarmScript.addEventListener('error', () => {
+                    console.error('Swarm Builder gagal dimuat dari server animasi.');
+                });
+                document.head.appendChild(swarmScript);
+            }
+
             // 1. Mobile Navigation Drawer
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileDrawer = document.getElementById('mobileDrawer');
@@ -1371,7 +1670,7 @@
                 });
             });
 
-            // 3. Salin Kontak Cepat + Toast Liquid Glass (Menggunakan execCommand agar aman di iFrame)
+            // 3. Salin Kontak Cepat + Toast Liquid Glass
             const toastBox = document.getElementById('toastBox');
             const copyButtons = document.querySelectorAll('.copy-trigger');
             let toastTimer = null;
@@ -1410,6 +1709,53 @@
                     showToast(`${label} berhasil disalin: ${value}`);
                 });
             });
+
+            // 4. Interactive Cursor Spotlight pada Kartu .liquid-glass
+            const glassCards = document.querySelectorAll('.liquid-glass');
+            glassCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+            // 5. Scroll Reveal Animation (IntersectionObserver)
+            const revealItems = document.querySelectorAll('.reveal-item');
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -35px 0px'
+            });
+
+            revealItems.forEach(item => revealObserver.observe(item));
+
+            // 6. Active Scroll-Spy pada Navbar
+            const sections = document.querySelectorAll('section[data-section]');
+            const navLinks = document.querySelectorAll('.nav-link[data-nav]');
+
+            const spyObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const currentId = entry.target.getAttribute('data-section');
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active-link', link.getAttribute('data-nav') === currentId);
+                        });
+                    }
+                });
+            }, {
+                rootMargin: '-35% 0px -50% 0px'
+            });
+
+            sections.forEach(sec => spyObserver.observe(sec));
         });
     </script>
 </body>
